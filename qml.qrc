@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>logo.svg</file>
+        <file>low-poly.svg</file>
+        <file>low-poly-disasembled.svg</file>
     </qresource>
 </RCC>
