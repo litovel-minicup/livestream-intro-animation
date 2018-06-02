@@ -4,7 +4,7 @@ import QtQuick.Window 2.2
 Window {
     visible: true
     width: 1280
-    height: 720
+    height: 1000
     title: qsTr("Hello World")
 
     MouseArea {
@@ -31,6 +31,7 @@ Window {
         fillMode: Image.PreserveAspectFit
 
         sourceSize: Qt.size(400, 600)
+        opacity: 0
 
         anchors.centerIn: parent
 //        opacity: 0
@@ -44,72 +45,76 @@ Window {
             axis { x: 0; y: 1; z: 0 }
         }
 
-        onAnimate: SequentialAnimation {
-//            NumberAnimation { id: animation; target: logoTransform; property: "angle";
-//                duration: 6000; from: 0;to: 360 * 5; easing.type: Easing.InCubic }
-            ScriptAction { script: canvas.inter = 1 }
+        onAnimate: {
+            if(canvas.interpolation == 1.)
+                canvas.interpolation = 0
+            else
+                canvas.interpolation = 1
         }
     }
 
     Canvas {
         id: canvas
 
-        property real inter: 0.
+        property real interpolation: 0
+        property real rotationAngle: 0
 
-        anchors.fill: parent
+        width: parent.width
+        height: parent.height
 
-        Behavior on inter{
-            NumberAnimation { duration: 900; easing.type: Easing.InCubic }
+        onInterpolationChanged: requestPaint()
+
+//        transform: Rotation {
+//            id: piecesTransform
+//            origin.x: 650
+//            origin.y: 295
+
+//            angle: 0
+//            axis { x: 0; y: 0; z: 1 }
+//        }
+
+        Behavior on interpolation {
+            NumberAnimation {
+                duration: 1000
+                easing.type: Easing.OutQuad
+            }
         }
 
-        onInterChanged: requestPaint()
+        NumberAnimation {
+            target: canvas
+            running: true
+            loops: Animation.Infinite
+            property: "rotationAngle"
+            duration: 80000
+            from: 0;
+            to: 360
+        }
+
+        onRotationAngleChanged: requestPaint()
 
         onPaint: {
-            var destPoints = [
-                Qt.point(100, 150),
-                Qt.point(250, 150),
-                Qt.point(150, 250),
+            var ctx = canvas.getContext("2d");
+            var triangles = pieceManager.interpolated(canvas.interpolation);
 
-                        Qt.point(100+ 200, 150),
-                        Qt.point(250+150, 150),
-                        Qt.point(150+190, 250)
-            ]
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            var centerPoint = Qt.point(650, 295 + 120)
+            ctx.translate(centerPoint.x, centerPoint.y)
+            ctx.rotate((Math.PI / 180) * 0.5)
+            ctx.translate(-centerPoint.x, -centerPoint.y)
 
-            var srcPoints = [
-                Qt.point(logo.x + logo.width / 2 + 50, logo.y + logo.height / 2 + 60),
-                Qt.point(logo.x + logo.width / 2, logo.y + logo.height / 2),
-                Qt.point(logo.x + logo.width / 2 - 50, logo.y + logo.height / 2),
-
-                Qt.point(logo.x + logo.width / 2 + 150, logo.y + logo.height / 2+ 40),
-                Qt.point(logo.x + logo.width / 2, logo.y + logo.height / 2),
-                Qt.point(logo.x + logo.width / 2 - 20, logo.y + logo.height / 2)
-            ]
-
-            var ctx = canvas.getContext("2d")
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            var colors = ["black", "red"]
-            for(var j = 0; j < 2; j++) {
-                var points = []
-
-                for(var i = 0; i < 3; i++) {
-                    var key = j * 3 + i
-                    points[i] = srcPoints[key]
-                    points[i].x += (destPoints[key].x - srcPoints[key].x) * canvas.inter
-                    points[i].y += (destPoints[key].y - srcPoints[key].y) * canvas.inter
-                }
-
-                ctx.fillStyle = colors[j]
+            for(var i in triangles) {
+                var singleTriangle = triangles[i]
+                var trianglePoints = singleTriangle.points
+                ctx.fillStyle = singleTriangle.color
 
                 ctx.beginPath()
-                ctx.moveTo(points[0].x, points[0].y)
+                ctx.moveTo(trianglePoints[0].x, trianglePoints[0].y)
+                ctx.lineTo(trianglePoints[1].x, trianglePoints[1].y)
+                ctx.lineTo(trianglePoints[2].x, trianglePoints[2].y)
+                ctx.lineTo(trianglePoints[0].x, trianglePoints[0].y)
 
-                for(var i in points) {
-                    if(i === 0)
-                        continue
-                    ctx.lineTo(points[i].x, points[i].y)
-                }
-                ctx.lineTo(points[0].x, points[0].y)
                 ctx.fill()
+                ctx.closePath()
             }
         }
     }

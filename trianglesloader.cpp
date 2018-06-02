@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QDomDocument>
 
-MappedTrianglePrimitives TrianglesLoader::load(const QString &filename)
+MappedTrianglePrimitives TrianglesLoader::load(const QString &filename, QPointF translation)
 {
     // load file
     QFile file(filename);
@@ -42,7 +42,7 @@ MappedTrianglePrimitives TrianglesLoader::load(const QString &filename)
             const QStringList rawPointData = rawSplittedPointsData[i].split(",");
             triangle.setPoint(i, QVector3D {rawPointData[0].toFloat(),
                                             rawPointData[1].toFloat(),
-                                            1.} );
+                                            1.} + QVector3D(translation) );
         }
 
         // map

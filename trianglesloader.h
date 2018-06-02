@@ -10,7 +10,7 @@ using MappedTrianglePrimitives = QMap<int, TrianglePrimitive>;
 class TrianglesLoader
 {
     public:
-        static MappedTrianglePrimitives load(const QString& filename);
+        static MappedTrianglePrimitives load(const QString& filename, QPointF translation = QPointF());
 };
 
 #endif // TRIANGLESLOADER_H

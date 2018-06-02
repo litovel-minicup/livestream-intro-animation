@@ -14,8 +14,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-    triangleprimitive.cpp
     trianglesloader.cpp \
+    triangleprimitive.cpp \
+    piecesmanager.cpp
 
 RESOURCES += qml.qrc
 
@@ -31,5 +32,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    triangleprimitive.h
     trianglesloader.h \
+    triangleprimitive.h \
+    piecesmanager.h
