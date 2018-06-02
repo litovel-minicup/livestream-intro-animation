@@ -40,9 +40,8 @@ MappedTrianglePrimitives TrianglesLoader::load(const QString &filename, QPointF 
         TrianglePrimitive triangle { color };
         for(int i = 0; i < 3; i++) {
             const QStringList rawPointData = rawSplittedPointsData[i].split(",");
-            triangle.setPoint(i, QVector3D {rawPointData[0].toFloat(),
-                                            rawPointData[1].toFloat(),
-                                            1.} + QVector3D(translation) );
+            triangle.setPoint(i, QPointF {rawPointData[0].toFloat(),
+                                            rawPointData[1].toFloat(), } + QPointF(translation) );
         }
 
         // map

@@ -17,7 +17,10 @@ class PiecesManager : public QObject
                                const QString& disassembledPiecesFilePath,
                                QObject *parent = nullptr);
     public slots:
-        QVariant interpolated(float i, bool inverted = false);
+        QVector<TrianglePrimitive> assembledTriangles() const;
+        QVector<TrianglePrimitive> disassembledTriangles() const;
+        QVariantList vAssembledTriangles() const;
+        QVariantList vDisassembledTriangles() const;
 };
 
 #endif // PIECESMANAGER_H

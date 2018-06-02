@@ -3,35 +3,36 @@
 
 #include <QColor>
 #include <QDebug>
-#include <QVector3D>
+#include <QPointF>
 
 
 class TrianglePrimitive
 {
     private:
-        QVector3D m_p[3];
+        QVector<QPointF> m_p;
         QColor m_color;
 
     public:
         TrianglePrimitive() {}
         TrianglePrimitive(const QColor& color);
-        TrianglePrimitive(float x1, float y1,
-                          float x2, float y2,
-                          float x3, float y3,
+        TrianglePrimitive(qreal x1, qreal y1,
+                          qreal x2, qreal y2,
+                          qreal x3, qreal y3,
                           const QColor& color);
-        TrianglePrimitive(const QVector3D& p1,
-                          const QVector3D& p2,
-                          const QVector3D& p3,
+        TrianglePrimitive(const QPointF& p1,
+                          const QPointF& p2,
+                          const QPointF& p3,
                           const QColor& color);
 
         QColor color() const;
-        QVector3D point(int i) const;
+        QPointF point(int i) const;
 
         void setColor(const QColor& col);
-        void setPoint(int i, const QVector3D& p);
-        void setPoint(int i, float x, float y);
+        void setPoint(int i, const QPointF& p);
+        void setPoint(int i, qreal x, qreal y);
 
         QVariant toVariant() const;
+        QVector<QPointF> points() const;
 };
 
 QDebug operator <<(QDebug debug, const TrianglePrimitive& t);

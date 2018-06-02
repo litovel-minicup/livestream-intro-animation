@@ -5,28 +5,29 @@
 TrianglePrimitive::TrianglePrimitive(const QColor &color)
 {
     m_color = color;
+    m_p.fill(QPointF(), 3);
 }
 
-TrianglePrimitive::TrianglePrimitive(float x1, float y1,
-                                     float x2, float y2,
-                                     float x3, float y3,
+TrianglePrimitive::TrianglePrimitive(qreal x1, qreal y1,
+                                     qreal x2, qreal y2,
+                                     qreal x3, qreal y3,
                                      const QColor &color)
 {
     m_color = color;
-    m_p[1] = QVector3D(x1, y1, 1);
-    m_p[2] = QVector3D(x2, y2, 1);
-    m_p[3] = QVector3D(x3, y3, 1);
+    m_p.append(QPointF(x1, y1));
+    m_p.append(QPointF(x2, y2));
+    m_p.append(QPointF(x3, y3));
 }
 
-TrianglePrimitive::TrianglePrimitive(const QVector3D &p1,
-                                     const QVector3D &p2,
-                                     const QVector3D &p3,
+TrianglePrimitive::TrianglePrimitive(const QPointF &p1,
+                                     const QPointF &p2,
+                                     const QPointF &p3,
                                      const QColor &color)
 {
     m_color = color;
-    m_p[1] = p1;
-    m_p[2] = p2;
-    m_p[3] = p3;
+    m_p.append(p1);
+    m_p.append(p2);
+    m_p.append(p3);
 }
 
 QColor TrianglePrimitive::color() const
@@ -34,7 +35,7 @@ QColor TrianglePrimitive::color() const
     return m_color;
 }
 
-QVector3D TrianglePrimitive::point(int i) const
+QPointF TrianglePrimitive::point(int i) const
 {
     return m_p[i];
 }
@@ -44,14 +45,14 @@ void TrianglePrimitive::setColor(const QColor &col)
     m_color = col;
 }
 
-void TrianglePrimitive::setPoint(int i, const QVector3D &p)
+void TrianglePrimitive::setPoint(int i, const QPointF &p)
 {
     m_p[i] = p;
 }
 
-void TrianglePrimitive::setPoint(int i, float x, float y)
+void TrianglePrimitive::setPoint(int i, qreal x, qreal y)
 {
-    m_p[i] = QVector3D { x, y, 1 };
+    m_p[i] = QPointF { x, y };
 }
 
 QVariant TrianglePrimitive::toVariant() const
@@ -60,9 +61,13 @@ QVariant TrianglePrimitive::toVariant() const
     data["color"] = m_color;
     data["points"] = QVariantList { m_p[0], m_p[1], m_p[2] };
 
-    return data;
+return data;
 }
 
+QVector<QPointF> TrianglePrimitive::points() const
+{
+    return m_p;
+}
 
 QDebug operator <<(QDebug debug, const TrianglePrimitive &t)
 {

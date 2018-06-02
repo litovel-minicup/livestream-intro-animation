@@ -16,7 +16,9 @@ SOURCES += \
         main.cpp \
     trianglesloader.cpp \
     triangleprimitive.cpp \
-    piecesmanager.cpp
+    piecesmanager.cpp \
+    triangleitem.cpp \
+    trianglecontainer.cpp
 
 RESOURCES += qml.qrc
 
@@ -34,4 +36,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     trianglesloader.h \
     triangleprimitive.h \
-    piecesmanager.h
+    piecesmanager.h \
+    triangleitem.h \
+    trianglecontainer.h

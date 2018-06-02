@@ -9,27 +9,28 @@ PiecesManager::PiecesManager(const QString &assembledPiecesFilePath,
                 disassembledPiecesFilePath, QPointF(0, 120));
 }
 
-QVariant PiecesManager::interpolated(float i, bool inverted)
+QVector<TrianglePrimitive> PiecesManager::assembledTriangles() const
 {
-    QVariantList points;
-    MappedTrianglePrimitives srcPolygons = m_disassembledTriangles;
-    MappedTrianglePrimitives destPolygons = m_assembledTriangles;
-    if(inverted)
-        qSwap(srcPolygons, destPolygons);
+    return m_assembledTriangles.values().toVector();
+}
 
-    for(int key: m_assembledTriangles.keys()) {
-        const TrianglePrimitive srcTriangle = srcPolygons[key];
-        const TrianglePrimitive desTriangle = destPolygons[key];
-        TrianglePrimitive interpolatedTriangle { srcTriangle.color() };
-        for(int j = 0; j <3; j++) {
-            interpolatedTriangle.setPoint(j,
-                                          srcTriangle.point(j) +
-                                          (desTriangle.point(j) -
-                                           srcTriangle.point(j)) * i);
-        }
+QVector<TrianglePrimitive> PiecesManager::disassembledTriangles() const
+{
+    return m_disassembledTriangles.values().toVector();
+}
 
-        points.append(interpolatedTriangle.toVariant());
-    }
+QVariantList PiecesManager::vAssembledTriangles() const
+{
+    QVariantList res;
+    for(auto key: m_assembledTriangles.keys())
+        res.append(m_assembledTriangles[key].toVariant());
+    return res;
+}
 
-    return points;
+QVariantList PiecesManager::vDisassembledTriangles() const
+{
+    QVariantList res;
+    for(auto key: m_disassembledTriangles.keys())
+        res.append(m_disassembledTriangles[key].toVariant());
+    return res;
 }
