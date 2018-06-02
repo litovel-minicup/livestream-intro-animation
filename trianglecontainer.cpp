@@ -4,7 +4,7 @@
 TrianglesContainer::TrianglesContainer(QQuickItem* parent): QQuickItem(parent)
 {
     m_interpolationAnimation = new QVariantAnimation { this };
-    m_interpolationAnimation->setDuration(800);
+    m_interpolationAnimation->setDuration(900);
     m_interpolationAnimation->setEasingCurve(QEasingCurve::OutCubic);
 
     m_pieceManager = new PiecesManager(":/low-poly.svg", ":/low-poly-disasembled.svg");
@@ -12,7 +12,7 @@ TrianglesContainer::TrianglesContainer(QQuickItem* parent): QQuickItem(parent)
                         m_pieceManager->assembledTriangles());
 
     connect(m_interpolationAnimation, &QVariantAnimation::valueChanged, [this](const QVariant& v) {
-        emit this->interpolationRequest(v.toReal());
+        emit this->interpolationRequest(v.toReal(), m_currentTransformation);
     });
 }
 
@@ -21,8 +21,13 @@ qreal TrianglesContainer::piecesRotation() const
     return m_piecesRotation;
 }
 
-void TrianglesContainer::interpolate(bool inverted)
+void TrianglesContainer::interpolate(qreal currentAngle, bool inverted)
 {
+    const QPointF origin { 650, 295 + 120 };
+    m_currentTransformation.setToIdentity();
+    m_currentTransformation.translate(origin.x(), origin.y());
+    m_currentTransformation.rotate(currentAngle, QVector3D { 0., 0., 1. });
+    m_currentTransformation.translate(-origin.x(), -origin.y());
     if(inverted) {
         m_interpolationAnimation->setStartValue(1.);
         m_interpolationAnimation->setEndValue(0.);
@@ -57,7 +62,6 @@ void TrianglesContainer::initTriangles(const QVector<TrianglePrimitive>& srcPoly
 
 void TrianglesContainer::setPiecesRotation(qreal piecesRotation)
 {
-    qWarning("Floating point comparison needs context sanity check");
     if (qFuzzyCompare(m_piecesRotation, piecesRotation))
         return;
 

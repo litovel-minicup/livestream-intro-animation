@@ -4,6 +4,7 @@
 #include <QQuickItem>
 #include <triangleitem.h>
 #include <piecesmanager.h>
+#include <QMatrix4x4>
 
 
 class TrianglesContainer : public QQuickItem
@@ -18,19 +19,20 @@ class TrianglesContainer : public QQuickItem
         QVector<TrianglePrimitive> m_destPolygons;
         qreal m_piecesRotation;
         QVariantAnimation* m_interpolationAnimation;
+        QMatrix4x4 m_currentTransformation;
 
     public:
         TrianglesContainer(QQuickItem* parent = nullptr);
         qreal piecesRotation() const;
 
     public slots:
-        void interpolate(bool inverted = false);
+        void interpolate(qreal currentAngle = 0., bool inverted = false);
         void initTriangles(const QVector<TrianglePrimitive>& srcPolygons,
                            const QVector<TrianglePrimitive>& destPolygons);
         void setPiecesRotation(qreal piecesRotation);
     signals:
         void piecesRotationChanged(qreal piecesRotation);
-        void interpolationRequest(qreal i);
+        void interpolationRequest(qreal i, const QMatrix4x4& currentTransformations = QMatrix4x4{});
 };
 
 #endif // TRIANGLECONTAINER_H

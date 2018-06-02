@@ -30,7 +30,8 @@ Window {
 
         anchors.fill: parent
         onClicked: {
-            triangles.interpolate(inverted)
+            rotationAnimation.stop()
+            triangles.interpolate(piecesTransform.angle, inverted)
             inverted = !inverted
         }
     }
@@ -46,16 +47,17 @@ Window {
             origin.x: 650
             origin.y: 295 + 120
 
-            angle: 0
+            angle: 45
             axis { x: 0; y: 0; z: 1 }
         }
 
 
         NumberAnimation {
+            id: rotationAnimation
             target: piecesTransform
             property: "angle"
             duration: 60000
-            running: true
+//            running: true
             loops: Animation.Infinite
             from: 0
             to: 360

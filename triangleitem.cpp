@@ -76,10 +76,13 @@ void TriangleItem::setUpContent()
         return;
 
     m_polygon.clear();
+    if(m_interpolation == 0.)
+        m_currentTransformation.setToIdentity();
 
     for(int i = 0; i < m_srcPoints.length(); i++) {
         const QPointF srcPoint = m_srcPoints.at(i);
-        const QPointF destPoint = m_destPoints.at(i);
+        // TODO inverse matrix
+        const QPointF destPoint = m_currentTransformation.inverted().map(m_destPoints.at(i));
         m_polygon << srcPoint + (destPoint - srcPoint) * m_interpolation;
     }
 
@@ -90,8 +93,9 @@ void TriangleItem::setUpContent()
     this->update();
 }
 
-void TriangleItem::setInterpolation(qreal i)
+void TriangleItem::setInterpolation(qreal i, const QMatrix4x4& currentTransformation)
 {
+    m_currentTransformation = currentTransformation;
     if(qFuzzyCompare(i, m_interpolation))
         return;
     m_interpolation = i;

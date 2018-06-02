@@ -1,6 +1,7 @@
 #ifndef TRIANGLEITEM_H
 #define TRIANGLEITEM_H
 
+#include <QMatrix4x4>
 #include <QObject>
 #include <QPolygonF>
 #include <QQuickPaintedItem>
@@ -21,6 +22,7 @@ class TriangleItem : public QQuickPaintedItem
         QVector<QPointF> m_srcPoints;
         QVector<QPointF> m_destPoints;
         QVariantAnimation* m_colorAnimation;
+        QMatrix4x4 m_currentTransformation;
 
     public:
         TriangleItem(QQuickItem* parent = nullptr);
@@ -36,7 +38,7 @@ class TriangleItem : public QQuickPaintedItem
         void setUpContent();
 
     public slots:
-        void setInterpolation(qreal i);
+        void setInterpolation(qreal i, const QMatrix4x4& currentTransformation);
         void setColor(QColor color);
         void setSrcPoints(QVector<QPointF> srcPoints);
         void setDestPoints(QVector<QPointF> destPoints);
