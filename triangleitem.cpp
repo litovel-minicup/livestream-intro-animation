@@ -6,14 +6,20 @@
 TriangleItem::TriangleItem(QQuickItem *parent): QQuickPaintedItem (parent)
 {
     m_colorAnimation = new QVariantAnimation(this);
-    m_colorAnimation->setDuration(800);
-//    m_colorAnimation->setLoopCount(-1);
+    m_colorAnimation->setDuration(1000);
+    m_interpolationAnimation = new QVariantAnimation { this };
+    m_interpolationAnimation->setDuration(900);
+    m_interpolationAnimation->setEasingCurve(QEasingCurve::OutCubic);
 
-    connect(this, &TriangleItem::srcPointsChanged, [this]() { this->update(); });
-    connect(this, &TriangleItem::interpolationChanged, [this]() { this->update(); });
+    m_interpolationAnimWithDelay = new QSequentialAnimationGroup(this);
+    m_interpolationAnimWithDelay->addAnimation(m_interpolationAnimation);
+
+
+//    connect(this, &TriangleItem::srcPointsChanged, [this]() { this->update(); });
     connect(this, &TriangleItem::srcPointsChanged, this, &TriangleItem::setUpContent);
     connect(this, &TriangleItem::destPointsChanged, this, &TriangleItem::setUpContent);
-    connect(this, &TriangleItem::interpolationChanged, this, &TriangleItem::setUpContent);
+
+//    connect(this, &TriangleItem::interpolationChanged, this, &TriangleItem::setUpContent);
     connect(this, &TriangleItem::destPointsChanged, this, &TriangleItem::setUpContent);
     connect(m_colorAnimation, &QVariantAnimation::valueChanged, [this](const QVariant& v) {
         m_animatedColor = v.value<QColor>();
@@ -26,6 +32,12 @@ TriangleItem::TriangleItem(QQuickItem *parent): QQuickPaintedItem (parent)
     connect(this, &TriangleItem::colorChanged, [this] {
         m_colorAnimation->stop();
         this->setUpColorAnimation();
+        this->update();
+    });
+
+    connect(m_interpolationAnimation, &QVariantAnimation::valueChanged, [this](const QVariant& v) {
+        m_interpolation = v.toReal();
+        this->setUpContent();
         this->update();
     });
 }
@@ -76,13 +88,12 @@ void TriangleItem::setUpContent()
         return;
 
     m_polygon.clear();
-    if(m_interpolation == 0.)
-        m_currentTransformation.setToIdentity();
+    QMatrix4x4 transMatrix;
+    transMatrix = m_currentTransformation;
 
     for(int i = 0; i < m_srcPoints.length(); i++) {
         const QPointF srcPoint = m_srcPoints.at(i);
-        // TODO inverse matrix
-        const QPointF destPoint = m_currentTransformation.inverted().map(m_destPoints.at(i));
+        const QPointF destPoint = transMatrix.inverted().map(m_destPoints.at(i));
         m_polygon << srcPoint + (destPoint - srcPoint) * m_interpolation;
     }
 
@@ -93,13 +104,36 @@ void TriangleItem::setUpContent()
     this->update();
 }
 
-void TriangleItem::setInterpolation(qreal i, const QMatrix4x4& currentTransformation)
+void TriangleItem::setRawInterpolation(qreal i)
+{
+    m_interpolation = i;
+}
+
+void TriangleItem::setAnimationDelay(int delay)
+{
+    m_interpolationAnimWithDelay->insertPause(0, delay);
+}
+
+void TriangleItem::interpolate(bool inverted)
+{
+    m_interpolationAnimWithDelay->stop();
+    m_interpolationAnimation->setCurrentTime(0);
+
+    if(inverted) {
+        m_interpolationAnimation->setStartValue(1.);
+        m_interpolationAnimation->setEndValue(0.);
+    }
+
+    else {
+        m_interpolationAnimation->setStartValue(0.);
+        m_interpolationAnimation->setEndValue(1.);
+    }
+    m_interpolationAnimWithDelay->start();
+}
+
+void TriangleItem::setCurrentTransformation(const QMatrix4x4& currentTransformation)
 {
     m_currentTransformation = currentTransformation;
-    if(qFuzzyCompare(i, m_interpolation))
-        return;
-    m_interpolation = i;
-    emit this->interpolationChanged(i);
 }
 
 void TriangleItem::setColor(QColor color)

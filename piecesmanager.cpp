@@ -6,7 +6,7 @@ PiecesManager::PiecesManager(const QString &assembledPiecesFilePath,
 {
     m_assembledTriangles = TrianglesLoader::load(assembledPiecesFilePath);
     m_disassembledTriangles = TrianglesLoader::load(
-                disassembledPiecesFilePath, QPointF(0, 120));
+                disassembledPiecesFilePath);
 }
 
 QVector<TrianglePrimitive> PiecesManager::assembledTriangles() const

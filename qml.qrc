@@ -4,5 +4,13 @@
         <file>logo.svg</file>
         <file>low-poly.svg</file>
         <file>low-poly-disasembled.svg</file>
+        <file>low-poly-couded.svg</file>
+        <file>Montserrat-ExtraLight.ttf</file>
+        <file>Montserrat-Light.ttf</file>
+        <file>Montserrat-Medium.ttf</file>
+        <file>logo_bottom_part.svg</file>
+        <file>logo_left_part.svg</file>
+        <file>logo_main_part.svg</file>
+        <file>logo_right_part.svg</file>
     </qresource>
 </RCC>

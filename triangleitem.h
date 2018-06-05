@@ -6,6 +6,7 @@
 #include <QPolygonF>
 #include <QQuickPaintedItem>
 #include <QVariantAnimation>
+#include <QSequentialAnimationGroup>
 #include <QVector>
 
 
@@ -14,6 +15,7 @@ class TriangleItem : public QQuickPaintedItem
     Q_OBJECT
 
     private:
+        int m_id;
         qreal m_interpolation;
         bool m_runColorAnimation = true;
         QColor m_animatedColor;
@@ -22,6 +24,9 @@ class TriangleItem : public QQuickPaintedItem
         QVector<QPointF> m_srcPoints;
         QVector<QPointF> m_destPoints;
         QVariantAnimation* m_colorAnimation;
+        QVariantAnimation* m_interpolationAnimation;
+        QSequentialAnimationGroup* m_interpolationAnimWithDelay;
+
         QMatrix4x4 m_currentTransformation;
 
     public:
@@ -38,7 +43,11 @@ class TriangleItem : public QQuickPaintedItem
         void setUpContent();
 
     public slots:
-        void setInterpolation(qreal i, const QMatrix4x4& currentTransformation);
+        void setRawInterpolation(qreal i);
+        // in msecs
+        void setAnimationDelay(int delay);
+        void interpolate(bool inverted = false);
+        void setCurrentTransformation(const QMatrix4x4& currentTransformation);
         void setColor(QColor color);
         void setSrcPoints(QVector<QPointF> srcPoints);
         void setDestPoints(QVector<QPointF> destPoints);
@@ -47,7 +56,7 @@ class TriangleItem : public QQuickPaintedItem
         void colorChanged(QColor color);
         void srcPointsChanged(QVector<QPointF> srcPoints);
         void destPointsChanged(QVector<QPointF> destPoints);
-        void interpolationChanged(qreal i);
+//        void interpolationChanged(qreal i);
 };
 
 #endif // TRIANGLEITEM_H
