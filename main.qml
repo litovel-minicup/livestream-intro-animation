@@ -19,6 +19,13 @@ Window {
         source: "qrc:/Montserrat-Medium.ttf"
     }
 
+    Shortcut {
+        sequence: "Ctrl+E"
+        onActivated: {
+            triangles.animate()
+        }
+    }
+
     MouseArea {
         anchors.fill: parent
         onClicked: triangles.animate()
@@ -28,28 +35,101 @@ Window {
         id: logo
 
         z: 1
-        opacity: 0
         source: "qrc:/logo.svg"
-        width: 400
-        height: 600
+        opacity: 0.0
+//        width: originalSize.width * scale
+//        height: originalSize.height * scale
         fillMode: Image.PreserveAspectFit
 
-        sourceSize: Qt.size(400, 600)
+//        sourceSize: Qt.size(originalSize.width * scale, originalSize.height * scale)
 
         anchors.centerIn: parent
+    }
+
+    Item {
+        id: loadingAnmation
+
+        z:66
+        y: 570
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        Behavior on opacity {
+            NumberAnimation { duration: 400 }
+        }
+
+        Rectangle {
+            id: leftRect
+
+            width: 20
+            radius: width
+            height: width
+            color: "lightGray"
+
+            anchors.left: parent.left
+        }
+
+        Rectangle {
+            id: rightRect
+
+            width: leftRect.width
+            radius: width
+            height: width
+            color: "lightGray"
+
+            anchors.right: parent.right
+        }
+
+
+        SequentialAnimation {
+           running: true
+           loops: Animation.Infinite
+
+           NumberAnimation {
+                target: leftRect
+                property: "anchors.leftMargin"
+                to: 100
+                duration: 400
+                easing.type: Easing.OutQuad
+           }
+
+           NumberAnimation {
+                target: leftRect
+                property: "anchors.leftMargin"
+                to: 0
+                duration: 400
+                easing.type: Easing.InQuad
+           }
+
+           NumberAnimation {
+                target: rightRect
+                property: "anchors.rightMargin"
+                to: 100
+                duration: 400
+                easing.type: Easing.OutQuad
+           }
+
+           NumberAnimation {
+                target: rightRect
+                property: "anchors.rightMargin"
+                to: 0
+                duration: 400
+                easing.type: Easing.InQuad
+           }
+        }
     }
 
 
     Item {
         id: logoContainer
 
-        readonly property real scale: 0.5
+        property real scale: 0.5
         readonly property size originalSize: Qt.size(957, 720)
 
         z: 1
         width: originalSize.width * scale
         height: originalSize.height * scale
         anchors.centerIn: parent
+        clip: true
 
         Image {
             id: logoMain
@@ -174,7 +254,7 @@ Window {
 
             Text {
                 id: textPonik
-                text: "PONY"
+                text: "NGUYEN"
                 antialiasing: true
                 font.family: "Montserrat"
                 font.pixelSize: textSonik.font.pixelSize
@@ -195,7 +275,7 @@ Window {
 
         Text {
             id: subtext
-            text: "LIVESTREAM DESIGN"
+            text: "LIVESTREAM DEVELOPER"
             antialiasing: true
             font.family: "Montserrat ExtraLight"
             font.pixelSize: textSonik.font.pixelSize * 0.394
@@ -231,7 +311,12 @@ Window {
         }
 
         onAnimate: SequentialAnimation {
-            NumberAnimation { duration: 5000 }
+            SequentialAnimation {
+                NumberAnimation { duration: 4000 }
+                ScriptAction { script: loadingAnmation.opacity = 0 }
+            }
+
+            NumberAnimation { duration: 1000 }
 
             ParallelAnimation {
                 NumberAnimation {
